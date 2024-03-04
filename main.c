@@ -41,6 +41,16 @@ static const struct xdg_wm_base_listener xdg_wm_base_listener = {
 	.ping = xdg_wm_base_handle_ping,
 };
 
+
+static void wl_surface_handle_enter(void *data,
+		struct wl_surface *surface, struct wl_output *output) {
+	printf("WL_SURFACE ENTER\n");
+}
+
+static const struct wl_surface_listener wl_surface_listener = {
+	.enter = wl_surface_handle_enter,
+};
+
 static void xdg_surface_handle_configure(void *data,
 		struct xdg_surface *xdg_surface, uint32_t serial) {
 	// The compositor configures our surface, acknowledge the configure event
@@ -167,6 +177,8 @@ static struct wl_buffer *create_buffer(void) {
 }
 
 int main(int argc, char *argv[]) {
+	printf("printf works\n");;
+
 	// Connect to the Wayland compositor
 	struct wl_display *display = wl_display_connect(NULL);
 	if (display == NULL) {
@@ -193,6 +205,7 @@ int main(int argc, char *argv[]) {
 		xdg_wm_base_get_xdg_surface(xdg_wm_base, surface);
 	xdg_toplevel = xdg_surface_get_toplevel(xdg_surface);
 
+	wl_surface_add_listener(surface, &wl_surface_listener, NULL);
 	xdg_surface_add_listener(xdg_surface, &xdg_surface_listener, NULL);
 	xdg_toplevel_add_listener(xdg_toplevel, &xdg_toplevel_listener, NULL);
 
